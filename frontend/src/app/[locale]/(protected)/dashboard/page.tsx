@@ -82,6 +82,17 @@ export default function DashboardPage() {
             <Button variant="outline">{t('feed.myDesigns')}</Button>
           </Link>
         )}
+        <Link href="/services">
+          <Button variant="outline">{t('services.title')}</Button>
+        </Link>
+        {user.role === 'VENDOR' && (
+          <Link href="/services/my">
+            <Button variant="outline">{t('services.myServices')}</Button>
+          </Link>
+        )}
+        <Link href="/bookings">
+          <Button variant="outline">{t('services.myBookings')}</Button>
+        </Link>
         <Link href="/profile">
           <Button variant="outline">{t('profile.edit')}</Button>
         </Link>

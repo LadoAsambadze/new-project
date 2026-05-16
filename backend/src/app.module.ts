@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { UsersModule } from './users/users.module.js';
 import { UploadModule } from './upload/upload.module.js';
 import { DesignsModule } from './designs/designs.module.js';
+import { ServicesModule } from './services/services.module.js';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { DesignsModule } from './designs/designs.module.js';
     UsersModule,
     UploadModule,
     DesignsModule,
+    ServicesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
