@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CUSTOMER
+  VENDOR
+}
+
+enum VendorType {
+  DESIGNER
+  VENUE
+  BAND
+  EVENT_MANAGER
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+}
+
+model User {
+  id         String      @id @default(cuid())
+  email      String      @unique
+  password   String?
+  name       String
+  avatar     String?
+  role       Role        @default(CUSTOMER)
+  vendorType VendorType?
+  googleId   String?     @unique
+  facebookId String?     @unique
+  isVerified Boolean     @default(false)
+  city       String?
+  bio        String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  refreshTokens RefreshToken[]
+  designs       Design[]
+  services      Service[]
+  events        Event[]
+  bookings      Booking[]
+  tickets       Ticket[]
+  notifications Notification[]
+  savedDesigns  SavedDesign[]
+  designLikes   DesignLike[]
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Design {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  images      String[]
+  category    String
+  price       Float?
+  isForSale   Boolean  @default(false)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  likes   DesignLike[]
+  savedBy SavedDesign[]
+}
+
+model DesignLike {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  designId  String
+  design    Design   @relation(fields: [designId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, designId])
+}
+
+model SavedDesign {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  designId  String
+  design    Design   @relation(fields: [designId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, designId])
+}
+
+model Service {
+  id          String     @id @default(cuid())
+  title       String
+  description String
+  category    VendorType
+  images      String[]
+  priceFrom   Float
+  priceTo     Float?
+  city        String
+  isAvailable Boolean    @default(true)
+  isFeatured  Boolean    @default(false)
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  bookings Booking[]
+}
+
+model Booking {
+  id        String        @id @default(cuid())
+  serviceId String
+  service   Service       @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    BookingStatus @default(PENDING)
+  date      DateTime
+  message   String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model Event {
+  id          String      @id @default(cuid())
+  title       String
+  description String
+  images      String[]
+  city        String
+  address     String
+  date        DateTime
+  endDate     DateTime?
+  category    String
+  status      EventStatus @default(DRAFT)
+  isFeatured  Boolean     @default(false)
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  tickets Ticket[]
+}
+
+model Ticket {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  price     Float
+  qrCode    String   @unique
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+}
