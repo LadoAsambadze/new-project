@@ -1,114 +1,89 @@
-"use client";
+'use client'
 
-import { ApolloClient, InMemoryCache } from "@apollo/client";
-import { ApolloLink } from "@apollo/client/link";
-import { SetContextLink } from "@apollo/client/link/context";
-import { ErrorLink } from "@apollo/client/link/error";
-import { HttpLink } from "@apollo/client/link/http";
-import { CombinedGraphQLErrors } from "@apollo/client/errors";
-import { Observable } from "rxjs";
+import { ApolloClient, ApolloLink, InMemoryCache, Observable } from '@apollo/client'
+import { setContext } from '@apollo/client/link/context'
+import { onError } from '@apollo/client/link/error'
+import { HttpLink } from '@apollo/client/link/http'
+import { getAccessToken, setAccessToken, clearAccessToken } from '@/lib/auth/token'
+import { REFRESH_TOKEN_MUTATION } from '@/graphql/auth/mutations'
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/graphql";
+  process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/graphql'
 
-// ─── Token Refresh ────────────────────────────────────────────────────────────
-async function refreshAccessToken(): Promise<string | null> {
-  try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_URL?.replace("/graphql", "") ??
-      "http://localhost:4000";
-    const response = await fetch(`${baseUrl}/auth/refresh`, {
-      method: "POST",
-      credentials: "include",
-    });
-
-    if (!response.ok) return null;
-
-    const data = (await response.json()) as { accessToken?: string };
-    return data.accessToken ?? null;
-  } catch {
-    return null;
-  }
-}
-
-// ─── Auth Link ────────────────────────────────────────────────────────────────
-// Attaches the access token from localStorage to every request header.
-// SetContextLink takes (prevContext, operation) in Apollo 4.
-const authLink = new SetContextLink((prevContext) => {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
-
+// ─── Auth Link ─────────────────────────────────────────────────────────────────
+// Attaches the in-memory access token to every request header.
+const authLink = setContext((_, prevContext: Record<string, unknown>) => {
+  const token = getAccessToken()
   const existingHeaders =
-    (prevContext as Record<string, unknown>)["headers"] ?? {};
+    (prevContext['headers'] as Record<string, string> | undefined) ?? {}
 
   return {
-    ...prevContext,
     headers: {
-      ...(existingHeaders as Record<string, string>),
+      ...existingHeaders,
       ...(token ? { authorization: `Bearer ${token}` } : {}),
     },
-  };
-});
+  }
+})
 
-// ─── Error Link ───────────────────────────────────────────────────────────────
-// Intercepts UNAUTHENTICATED errors, calls /auth/refresh, stores new token, retries.
-const errorLink = new ErrorLink(({ error, operation, forward }) => {
-  if (!CombinedGraphQLErrors.is(error)) return;
+// ─── Error Link ────────────────────────────────────────────────────────────────
+// Intercepts UNAUTHENTICATED errors, calls refreshToken mutation, retries.
+const errorLink = onError(({ graphQLErrors, operation, forward }) => {
+  if (!graphQLErrors) return
 
-  const is401 = error.errors.some(
+  const isUnauthenticated = graphQLErrors.some(
     (err) =>
-      err.extensions?.["code"] === "UNAUTHENTICATED" ||
-      (err.extensions?.["response"] as { statusCode?: number } | undefined)
-        ?.statusCode === 401
-  );
+      err.extensions?.['code'] === 'UNAUTHENTICATED' ||
+      (err.extensions?.['response'] as { statusCode?: number } | undefined)
+        ?.statusCode === 401,
+  )
 
-  if (!is401) return;
+  if (!isUnauthenticated) return
 
-  return new Observable<ApolloLink.Result>((observer) => {
-    refreshAccessToken()
-      .then((newToken) => {
+  return new Observable((observer) => {
+    apolloClient
+      .mutate<{ refreshToken: string }>({ mutation: REFRESH_TOKEN_MUTATION })
+      .then(({ data }) => {
+        const newToken = data?.refreshToken
         if (!newToken) {
-          if (typeof window !== "undefined") {
-            localStorage.removeItem("accessToken");
-          }
-          observer.error(new Error("Session expired. Please log in again."));
-          return;
+          clearAccessToken()
+          observer.error(new Error('Session expired. Please log in again.'))
+          return
         }
 
-        if (typeof window !== "undefined") {
-          localStorage.setItem("accessToken", newToken);
-        }
+        setAccessToken(newToken)
 
-        // Update context headers with new token and retry the operation.
         operation.setContext((ctx: Record<string, unknown>) => ({
           ...ctx,
           headers: {
-            ...((ctx["headers"] as Record<string, string>) ?? {}),
+            ...((ctx['headers'] as Record<string, string>) ?? {}),
             authorization: `Bearer ${newToken}`,
           },
-        }));
+        }))
 
         forward(operation).subscribe({
           next: (value) => observer.next(value),
           error: (err: unknown) => observer.error(err),
           complete: () => observer.complete(),
-        });
+        })
       })
-      .catch((err: unknown) => observer.error(err));
-  });
-});
+      .catch((err: unknown) => {
+        clearAccessToken()
+        observer.error(err)
+      })
+  })
+})
 
-// ─── HTTP Link ────────────────────────────────────────────────────────────────
+// ─── HTTP Link ─────────────────────────────────────────────────────────────────
 const httpLink = new HttpLink({
   uri: API_URL,
-  credentials: "include",
-});
+  credentials: 'include',
+})
 
-// ─── Apollo Client ────────────────────────────────────────────────────────────
+// ─── Apollo Client ─────────────────────────────────────────────────────────────
 export const apolloClient = new ApolloClient({
   link: ApolloLink.from([errorLink, authLink, httpLink]),
   cache: new InMemoryCache(),
   defaultOptions: {
-    watchQuery: { fetchPolicy: "cache-and-network" },
+    watchQuery: { fetchPolicy: 'cache-and-network' },
   },
-});
+})
