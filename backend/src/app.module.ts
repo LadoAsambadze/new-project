@@ -8,6 +8,7 @@ import { AppService } from './app.service.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { UsersModule } from './users/users.module.js';
+import { UploadModule } from './upload/upload.module.js';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { UsersModule } from './users/users.module.js';
     // ─── Feature Modules ─────────────────────────────────────────────────────
     AuthModule,
     UsersModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

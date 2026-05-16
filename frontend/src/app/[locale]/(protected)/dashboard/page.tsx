@@ -1,11 +1,14 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { useAuth } from '@/lib/auth/auth-context'
-import { useRouter } from '@/i18n/navigation'
+import { useRouter, Link } from '@/i18n/navigation'
 import { Button } from '@/components/ui/button'
+import { Avatar } from '@/components/profile/avatar'
 
 export default function DashboardPage() {
+  const t = useTranslations()
   const { user, loading, logout } = useAuth()
   const router = useRouter()
 
@@ -32,13 +35,33 @@ export default function DashboardPage() {
     router.push('/login')
   }
 
+  const isVendorWithoutType = user.role === 'VENDOR' && !user.vendorType
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-8">
+      {isVendorWithoutType && (
+        <div className="w-full max-w-md rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <span className="font-medium">{t('roles.completeProfile')}: </span>
+          <Link href="/onboarding" className="underline hover:no-underline">
+            {t('roles.onboarding')}
+          </Link>
+        </div>
+      )}
+
       <div className="flex flex-col items-center gap-4 text-center">
+        <Avatar src={user.avatar} name={user.name} size="lg" />
+
         <h1 className="text-3xl font-bold">Welcome, {user.name}</h1>
+
         <div className="flex items-center gap-2">
-          <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-            {user.role}
+          <span
+            className={
+              user.role === 'VENDOR'
+                ? 'rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700'
+                : 'rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700'
+            }
+          >
+            {user.role === 'VENDOR' ? t('roles.vendor') : t('roles.customer')}
           </span>
           {user.vendorType && (
             <span className="rounded-full bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">
@@ -46,11 +69,18 @@ export default function DashboardPage() {
             </span>
           )}
         </div>
+
         <p className="text-muted-foreground">{user.email}</p>
       </div>
-      <Button variant="outline" onClick={() => void handleLogout()}>
-        Log out
-      </Button>
+
+      <div className="flex gap-3">
+        <Link href="/profile">
+          <Button variant="outline">{t('profile.edit')}</Button>
+        </Link>
+        <Button variant="outline" onClick={() => void handleLogout()}>
+          Log out
+        </Button>
+      </div>
     </div>
   )
 }

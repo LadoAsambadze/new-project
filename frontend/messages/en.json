@@ -17,5 +17,27 @@
     "venue": "Venue / Disco",
     "band": "Musical Band",
     "manager": "Event Manager"
+  },
+  "roles": {
+    "customer": "Customer",
+    "vendor": "Vendor",
+    "designer": "Designer",
+    "venue": "Venue / Disco",
+    "band": "Musical Band",
+    "manager": "Event Manager",
+    "completeProfile": "Complete your profile",
+    "selectVendorType": "What type of vendor are you?",
+    "onboarding": "Vendor Onboarding"
+  },
+  "profile": {
+    "title": "My Profile",
+    "edit": "Edit Profile",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "bio": "Bio",
+    "city": "City",
+    "name": "Name",
+    "uploadAvatar": "Upload Photo",
+    "changePhoto": "Change Photo"
   }
 }

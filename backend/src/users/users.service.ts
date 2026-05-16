@@ -13,6 +13,14 @@ export interface CreateUserDto {
   avatar?: string;
 }
 
+export interface UpdateUserDto {
+  name?: string;
+  bio?: string;
+  city?: string;
+  avatar?: string;
+  vendorType?: VendorType;
+}
+
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
@@ -46,5 +54,25 @@ export class UsersService {
         avatar: dto.avatar,
       },
     });
+  }
+
+  update(id: string, data: UpdateUserDto) {
+    return this.prisma.user.update({
+      where: { id },
+      data,
+    });
+  }
+
+  findVendors(type?: string) {
+    return this.prisma.user.findMany({
+      where: {
+        role: Role.VENDOR,
+        ...(type ? { vendorType: type as VendorType } : {}),
+      },
+    });
+  }
+
+  findAll() {
+    return this.prisma.user.findMany();
   }
 }
