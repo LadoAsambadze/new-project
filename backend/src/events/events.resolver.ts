@@ -47,6 +47,36 @@ export class EventsResolver {
     return this.eventsService.getMyTickets(currentUser.id);
   }
 
+  @Query(() => [EventType])
+  async featuredEvents(
+    @Args('limit', { nullable: true, type: () => Int }) limit?: number,
+  ): Promise<EventType[]> {
+    return this.eventsService.findFeatured(limit ?? 6);
+  }
+
+  @Query(() => EventFeedResult)
+  async eventsByCity(
+    @Args('city') city: string,
+    @Args('category', { nullable: true }) category?: string,
+    @Args('dateFrom', { nullable: true }) dateFrom?: string,
+    @Args('cursor', { nullable: true }) cursor?: string,
+    @Args('limit', { nullable: true, type: () => Int }) limit?: number,
+  ): Promise<EventFeedResult> {
+    return this.eventsService.findByCity(city, { category, dateFrom }, cursor, limit ?? 12);
+  }
+
+  @Query(() => [String])
+  async availableCities(): Promise<string[]> {
+    return this.eventsService.getCities();
+  }
+
+  @Query(() => [EventType])
+  async upcomingEvents(
+    @Args('limit', { nullable: true, type: () => Int }) limit?: number,
+  ): Promise<EventType[]> {
+    return this.eventsService.findUpcoming(limit ?? 8);
+  }
+
   @Query(() => [TicketType])
   @UseGuards(GqlAuthGuard)
   async eventAttendees(

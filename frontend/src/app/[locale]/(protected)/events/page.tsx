@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react'
 import { useQuery } from '@apollo/client/react'
 import { useTranslations } from 'next-intl'
-import { Plus } from 'lucide-react'
+import { Plus, MapPin } from 'lucide-react'
 import { useAuth } from '@/lib/auth/auth-context'
-import { useRouter } from '@/i18n/navigation'
+import { useRouter, Link } from '@/i18n/navigation'
 import { Button } from '@/components/ui/button'
 import { EventGrid } from '@/components/events/event-grid'
 import { EventFilters } from '@/components/events/event-filters'
@@ -87,6 +87,18 @@ export default function EventsPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-5xl p-4">
+        {/* Discover banner */}
+        <Link
+          href="/discover"
+          className="mb-6 flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 transition-colors hover:bg-primary/10"
+        >
+          <MapPin className="h-5 w-5 text-primary flex-shrink-0" />
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-primary">Looking for local events?</p>
+            <p className="text-xs text-muted-foreground">Browse events by city in Georgia &rarr; Discover</p>
+          </div>
+        </Link>
+
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-2xl font-bold">{t('title')}</h1>
           <Button

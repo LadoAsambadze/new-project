@@ -95,6 +95,16 @@
     "alreadyHaveTicket": "You already have a ticket",
     "category": "Category"
   },
+  "discover": {
+    "title": "Discover Local Events",
+    "featured": "Featured Events",
+    "upcoming": "Upcoming Events",
+    "allCities": "All Cities",
+    "eventsIn": "Events in",
+    "noEventsInCity": "No events in this city yet",
+    "browseAll": "Browse all events",
+    "localEvents": "Local Events"
+  },
   "feed": {
     "title": "Discover Designs",
     "all": "All",

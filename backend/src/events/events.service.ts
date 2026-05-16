@@ -318,4 +318,71 @@ export class EventsService {
     });
     return tickets.map((t) => toTicketType(t as unknown as DbTicket));
   }
+
+  // ─── Discovery Methods ────────────────────────────────────────────────────────
+
+  async findFeatured(limit = 6): Promise<EventType[]> {
+    const events = await this.prisma.event.findMany({
+      where: { status: 'PUBLISHED', isFeatured: true },
+      orderBy: { date: 'asc' },
+      take: limit,
+      include: EVENT_INCLUDE,
+    });
+    return events.map((e) => toEventType(e as unknown as DbEvent));
+  }
+
+  async findByCity(
+    city: string,
+    filters?: { category?: string; dateFrom?: string },
+    cursor?: string,
+    limit = 12,
+  ): Promise<{ items: EventType[]; nextCursor?: string; hasMore: boolean }> {
+    const take = limit + 1;
+    const where: Record<string, unknown> = {
+      status: 'PUBLISHED',
+      city: { contains: city, mode: 'insensitive' },
+    };
+    if (filters?.category) where.category = { contains: filters.category, mode: 'insensitive' };
+    if (filters?.dateFrom) where.date = { gte: new Date(filters.dateFrom) };
+
+    const events = await this.prisma.event.findMany({
+      where,
+      take,
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+      orderBy: { date: 'asc' },
+      include: EVENT_INCLUDE,
+    });
+
+    const hasMore = events.length > limit;
+    const items = hasMore ? events.slice(0, limit) : events;
+    const nextCursor = hasMore ? items[items.length - 1]?.id : undefined;
+
+    return {
+      items: items.map((e) => toEventType(e as unknown as DbEvent)),
+      nextCursor,
+      hasMore,
+    };
+  }
+
+  async getCities(): Promise<string[]> {
+    const groups = await this.prisma.event.groupBy({
+      by: ['city'],
+      where: { status: 'PUBLISHED' },
+      orderBy: { city: 'asc' },
+    });
+    return groups.map((g) => g.city);
+  }
+
+  async findUpcoming(limit = 8): Promise<EventType[]> {
+    const events = await this.prisma.event.findMany({
+      where: {
+        status: 'PUBLISHED',
+        date: { gte: new Date() },
+      },
+      orderBy: { date: 'asc' },
+      take: limit,
+      include: EVENT_INCLUDE,
+    });
+    return events.map((e) => toEventType(e as unknown as DbEvent));
+  }
 }

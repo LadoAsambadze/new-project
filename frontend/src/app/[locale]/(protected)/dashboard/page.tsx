@@ -73,7 +73,23 @@ export default function DashboardPage() {
         <p className="text-muted-foreground">{user.email}</p>
       </div>
 
+      <div className="w-full max-w-md">
+        <Link
+          href="/discover"
+          className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 transition-colors hover:bg-primary/10 mb-4"
+        >
+          <span className="text-2xl">🗺️</span>
+          <div>
+            <p className="text-sm font-semibold text-primary">{t('discover.title')}</p>
+            <p className="text-xs text-muted-foreground">{t('discover.localEvents')}</p>
+          </div>
+        </Link>
+      </div>
+
       <div className="flex flex-wrap justify-center gap-3">
+        <Link href="/discover">
+          <Button variant="default">{t('discover.localEvents')}</Button>
+        </Link>
         <Link href="/feed">
           <Button variant="outline">{t('feed.title')}</Button>
         </Link>

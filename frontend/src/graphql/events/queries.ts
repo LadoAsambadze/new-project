@@ -97,3 +97,40 @@ export const EVENT_ATTENDEES_QUERY = gql`
     }
   }
 `
+
+export const FEATURED_EVENTS_QUERY = gql`
+  ${EVENT_FRAGMENT}
+  query FeaturedEvents($limit: Int) {
+    featuredEvents(limit: $limit) {
+      ...EventFields
+    }
+  }
+`
+
+export const EVENTS_BY_CITY_QUERY = gql`
+  ${EVENT_FRAGMENT}
+  query EventsByCity($city: String!, $category: String, $dateFrom: String, $cursor: String, $limit: Int) {
+    eventsByCity(city: $city, category: $category, dateFrom: $dateFrom, cursor: $cursor, limit: $limit) {
+      items {
+        ...EventFields
+      }
+      nextCursor
+      hasMore
+    }
+  }
+`
+
+export const AVAILABLE_CITIES_QUERY = gql`
+  query AvailableCities {
+    availableCities
+  }
+`
+
+export const UPCOMING_EVENTS_QUERY = gql`
+  ${EVENT_FRAGMENT}
+  query UpcomingEvents($limit: Int) {
+    upcomingEvents(limit: $limit) {
+      ...EventFields
+    }
+  }
+`
