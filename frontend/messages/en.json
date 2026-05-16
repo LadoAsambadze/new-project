@@ -1,1 +1,21 @@
-{}
+{
+  "auth": {
+    "login": "Sign In",
+    "register": "Create Account",
+    "email": "Email",
+    "password": "Password",
+    "name": "Full Name",
+    "loginTitle": "Welcome back",
+    "registerTitle": "Join the platform",
+    "customer": "I'm looking for services",
+    "vendor": "I offer services",
+    "google": "Continue with Google",
+    "facebook": "Continue with Facebook",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "designer": "Designer",
+    "venue": "Venue / Disco",
+    "band": "Musical Band",
+    "manager": "Event Manager"
+  }
+}
