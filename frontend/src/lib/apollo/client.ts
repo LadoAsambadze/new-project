@@ -1,9 +1,11 @@
 'use client'
 
-import { ApolloClient, ApolloLink, InMemoryCache, Observable } from '@apollo/client'
-import { setContext } from '@apollo/client/link/context'
-import { onError } from '@apollo/client/link/error'
+import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client/core'
+import { Observable } from 'rxjs'
+import { SetContextLink } from '@apollo/client/link/context'
+import { ErrorLink } from '@apollo/client/link/error'
 import { HttpLink } from '@apollo/client/link/http'
+import { CombinedGraphQLErrors } from '@apollo/client/errors'
 import { getAccessToken, setAccessToken, clearAccessToken } from '@/lib/auth/token'
 import { REFRESH_TOKEN_MUTATION } from '@/graphql/auth/mutations'
 
@@ -12,7 +14,7 @@ const API_URL =
 
 // ─── Auth Link ─────────────────────────────────────────────────────────────────
 // Attaches the in-memory access token to every request header.
-const authLink = setContext((_, prevContext: Record<string, unknown>) => {
+const authLink = new SetContextLink((prevContext) => {
   const token = getAccessToken()
   const existingHeaders =
     (prevContext['headers'] as Record<string, string> | undefined) ?? {}
@@ -27,10 +29,10 @@ const authLink = setContext((_, prevContext: Record<string, unknown>) => {
 
 // ─── Error Link ────────────────────────────────────────────────────────────────
 // Intercepts UNAUTHENTICATED errors, calls refreshToken mutation, retries.
-const errorLink = onError(({ graphQLErrors, operation, forward }) => {
-  if (!graphQLErrors) return
+const errorLink = new ErrorLink(({ error, operation, forward }) => {
+  if (!CombinedGraphQLErrors.is(error)) return
 
-  const isUnauthenticated = graphQLErrors.some(
+  const isUnauthenticated = error.errors.some(
     (err) =>
       err.extensions?.['code'] === 'UNAUTHENTICATED' ||
       (err.extensions?.['response'] as { statusCode?: number } | undefined)
@@ -39,7 +41,7 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
 
   if (!isUnauthenticated) return
 
-  return new Observable((observer) => {
+  return new Observable<ApolloLink.Result>((observer) => {
     apolloClient
       .mutate<{ refreshToken: string }>({ mutation: REFRESH_TOKEN_MUTATION })
       .then(({ data }) => {

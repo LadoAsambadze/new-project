@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useRouter } from '@/i18n/navigation'
 import { Link } from '@/i18n/navigation'
 import { useAuth } from '@/lib/auth/auth-context'
@@ -29,11 +29,11 @@ interface RegisterVariables {
   }
 }
 
-const VENDOR_TYPES: { value: VendorType; labelKey: keyof ReturnType<typeof useTranslations<'auth'>> }[] = [
-  { value: 'DESIGNER', labelKey: 'designer' },
-  { value: 'VENUE', labelKey: 'venue' },
-  { value: 'BAND', labelKey: 'band' },
-  { value: 'EVENT_MANAGER', labelKey: 'manager' },
+const VENDOR_TYPES: { value: VendorType; label: string }[] = [
+  { value: 'DESIGNER', label: 'designer' },
+  { value: 'VENUE', label: 'venue' },
+  { value: 'BAND', label: 'band' },
+  { value: 'EVENT_MANAGER', label: 'manager' },
 ]
 
 export function RegisterForm() {
@@ -81,6 +81,16 @@ export function RegisterForm() {
         },
       },
     })
+  }
+
+  const getVendorLabel = (label: string): string => {
+    const map: Record<string, string> = {
+      designer: t('designer'),
+      venue: t('venue'),
+      band: t('band'),
+      manager: t('manager'),
+    }
+    return map[label] ?? label
   }
 
   return (
@@ -175,7 +185,7 @@ export function RegisterForm() {
           <div className="flex flex-col gap-2">
             <Label>Vendor Type</Label>
             <div className="grid grid-cols-2 gap-2">
-              {VENDOR_TYPES.map(({ value, labelKey }) => (
+              {VENDOR_TYPES.map(({ value, label }) => (
                 <button
                   key={value}
                   type="button"
@@ -187,7 +197,7 @@ export function RegisterForm() {
                       : 'border-border hover:border-primary/50',
                   )}
                 >
-                  {t(labelKey as Parameters<typeof t>[0])}
+                  {getVendorLabel(label)}
                 </button>
               ))}
             </div>

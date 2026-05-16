@@ -28,15 +28,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   const fetchMe = useCallback(async () => {
-    try {
-      const { data } = await apolloClient.query<{ me: AuthUser }>({
-        query: ME_QUERY,
-        fetchPolicy: 'network-only',
-      })
-      setUser(data.me ?? null)
-    } catch {
-      setUser(null)
-    }
+    const result = await apolloClient.query<{ me: AuthUser }>({
+      query: ME_QUERY,
+      fetchPolicy: 'network-only',
+    })
+    setUser(result.data?.me ?? null)
   }, [])
 
   const initialize = useCallback(async () => {

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useRouter } from '@/i18n/navigation'
 import { Link } from '@/i18n/navigation'
 import { useAuth } from '@/lib/auth/auth-context'
