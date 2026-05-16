@@ -2,11 +2,12 @@ import {
   Controller,
   Post,
   UploadedFile,
+  UploadedFiles,
   UseInterceptors,
   BadRequestException,
   HttpCode,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import { v2 as cloudinary } from 'cloudinary';
 import { memoryStorage } from 'multer';
@@ -73,5 +74,57 @@ export class UploadController {
     );
 
     return { url: result.secure_url };
+  }
+
+  @Post('images')
+  @HttpCode(200)
+  @UseInterceptors(
+    FilesInterceptor('files', 10, {
+      storage: memoryStorage(),
+      limits: { fileSize: MAX_FILE_SIZE },
+      fileFilter: (
+        _req,
+        file,
+        cb,
+      ) => {
+        if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+          cb(null, true);
+        } else {
+          cb(
+            new BadRequestException(
+              'Only jpg, jpeg, png and webp files are allowed',
+            ),
+            false,
+          );
+        }
+      },
+    }),
+  )
+  async uploadImages(
+    @UploadedFiles() files: Express.Multer.File[],
+  ): Promise<{ urls: string[] }> {
+    if (!files || files.length === 0) {
+      throw new BadRequestException('No files uploaded');
+    }
+
+    const uploads = files.map(
+      (file) =>
+        new Promise<string>((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: 'designs', resource_type: 'image' },
+            (error, result) => {
+              if (error || !result) {
+                reject(error ?? new Error('Upload failed'));
+              } else {
+                resolve((result as { secure_url: string }).secure_url);
+              }
+            },
+          );
+          stream.end(file.buffer);
+        }),
+    );
+
+    const urls = await Promise.all(uploads);
+    return { urls };
   }
 }

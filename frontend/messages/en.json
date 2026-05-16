@@ -39,5 +39,26 @@
     "name": "Name",
     "uploadAvatar": "Upload Photo",
     "changePhoto": "Change Photo"
+  },
+  "feed": {
+    "title": "Discover Designs",
+    "all": "All",
+    "wedding": "Wedding",
+    "birthday": "Birthday",
+    "corporate": "Corporate",
+    "party": "Party",
+    "other": "Other",
+    "like": "Like",
+    "save": "Save",
+    "upload": "Upload Design",
+    "myDesigns": "My Designs",
+    "noDesigns": "No designs yet",
+    "loadMore": "Load more",
+    "forSale": "For Sale",
+    "price": "Price",
+    "request": "Request This Design",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete this design?"
   }
 }

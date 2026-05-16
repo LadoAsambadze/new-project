@@ -73,7 +73,15 @@ export default function DashboardPage() {
         <p className="text-muted-foreground">{user.email}</p>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex flex-wrap justify-center gap-3">
+        <Link href="/feed">
+          <Button variant="outline">{t('feed.title')}</Button>
+        </Link>
+        {user.role === 'VENDOR' && (
+          <Link href="/designs/my">
+            <Button variant="outline">{t('feed.myDesigns')}</Button>
+          </Link>
+        )}
         <Link href="/profile">
           <Button variant="outline">{t('profile.edit')}</Button>
         </Link>
