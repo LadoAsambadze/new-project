@@ -93,6 +93,15 @@ export default function DashboardPage() {
         <Link href="/bookings">
           <Button variant="outline">{t('services.myBookings')}</Button>
         </Link>
+        <Link href="/events">
+          <Button variant="outline">{t('events.title')}</Button>
+        </Link>
+        <Link href="/events/my">
+          <Button variant="outline">{t('events.myEvents')}</Button>
+        </Link>
+        <Link href="/tickets">
+          <Button variant="outline">{t('events.myTickets')}</Button>
+        </Link>
         <Link href="/profile">
           <Button variant="outline">{t('profile.edit')}</Button>
         </Link>

@@ -11,6 +11,7 @@ import { UsersModule } from './users/users.module.js';
 import { UploadModule } from './upload/upload.module.js';
 import { DesignsModule } from './designs/designs.module.js';
 import { ServicesModule } from './services/services.module.js';
+import { EventsModule } from './events/events.module.js';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ServicesModule } from './services/services.module.js';
     UploadModule,
     DesignsModule,
     ServicesModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
