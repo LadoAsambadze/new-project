@@ -51,7 +51,7 @@ export default function DashboardPage() {
       <div className="flex flex-col items-center gap-4 text-center">
         <Avatar src={user.avatar} name={user.name} size="lg" />
 
-        <h1 className="text-3xl font-bold">Welcome, {user.name}</h1>
+        <h1 className="text-3xl font-bold">{t('common.welcome')}, {user.name}</h1>
 
         <div className="flex items-center gap-2">
           <span
@@ -122,7 +122,7 @@ export default function DashboardPage() {
           <Button variant="outline">{t('profile.edit')}</Button>
         </Link>
         <Button variant="outline" onClick={() => void handleLogout()}>
-          Log out
+          {t('common.logout')}
         </Button>
       </div>
     </div>

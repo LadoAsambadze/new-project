@@ -168,6 +168,8 @@
     "edit": "Edit",
     "create": "Create",
     "submit": "Submit",
-    "viewAll": "View All"
+    "viewAll": "View All",
+    "logout": "Log out",
+    "welcome": "Welcome"
   }
 }

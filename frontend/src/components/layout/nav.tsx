@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/auth/auth-context'
 import { cn } from '@/lib/utils'
 import { LogOut } from 'lucide-react'
 import { NotificationBell } from '@/components/notifications/notification-bell'
+import { LanguageSwitcher } from '@/components/layout/language-switcher'
 
 const NAV_LINKS = [
   { href: '/discover', labelKey: 'discover.localEvents' },
@@ -61,6 +62,7 @@ export function Nav() {
           )}
         </div>
         <div className="flex items-center gap-1 flex-shrink-0">
+          <LanguageSwitcher />
           <NotificationBell />
           <button
             onClick={() => void handleLogout()}
@@ -68,7 +70,7 @@ export function Nav() {
             aria-label="Logout"
           >
             <LogOut className="h-4 w-4" />
-            <span className="hidden sm:inline">Logout</span>
+            <span className="hidden sm:inline">{t('common.logout')}</span>
           </button>
         </div>
       </div>
