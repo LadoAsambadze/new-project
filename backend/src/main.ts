@@ -1,11 +1,17 @@
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { NestFactory, NestApplication } from '@nestjs/core';
+import { ValidationPipe, Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const cookieParser = require('cookie-parser') as typeof import('cookie-parser');
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestApplication>(AppModule);
+
+  // ─── Global prefix ─────────────────────────────────────────────────────────
+  app.setGlobalPrefix('api');
+
+  // ─── Shutdown hooks ────────────────────────────────────────────────────────
+  app.enableShutdownHooks();
 
   // ─── Cookie Parser ─────────────────────────────────────────────────────────
   app.use(cookieParser());
@@ -32,7 +38,7 @@ async function bootstrap() {
 
   const port = process.env.PORT ?? 4000;
   await app.listen(port);
-  console.log(`🚀 Backend running on http://localhost:${port}/graphql`);
+  Logger.log(`Server running on port ${port}`, 'Bootstrap');
 }
 
 bootstrap();

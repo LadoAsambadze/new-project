@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react'
+import Image from 'next/image'
 import { Avatar } from '@/components/profile/avatar'
 import { cn } from '@/lib/utils'
 import { BookingForm } from './booking-form'
@@ -38,10 +39,11 @@ export function ServiceDetail({
       <div className="relative md:w-1/2">
         <div className="aspect-video overflow-hidden rounded-2xl bg-muted relative">
           {images[imageIndex] ? (
-            <img
+            <Image
               src={images[imageIndex]}
               alt={service.title}
-              className="h-full w-full object-cover"
+              fill
+              className="object-cover"
             />
           ) : (
             <div className="flex h-full items-center justify-center text-muted-foreground">
@@ -80,11 +82,11 @@ export function ServiceDetail({
                   key={idx}
                   onClick={() => setImageIndex(idx)}
                   className={cn(
-                    'h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-colors',
+                    'relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-colors',
                     idx === imageIndex ? 'border-primary' : 'border-border',
                   )}
                 >
-                  <img src={img} alt="" className="h-full w-full object-cover" />
+                  <Image src={img} alt="" fill className="object-cover" />
                 </button>
               ))}
             </div>

@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { notFound } from 'next/navigation'
@@ -7,9 +6,18 @@ import { routing } from '@/i18n/routing'
 import { ApolloClientProvider } from '@/lib/apollo/provider'
 import { AuthProvider } from '@/lib/auth/auth-context'
 
-export const metadata: Metadata = {
-  title: 'EventHub',
-  description: 'Find or offer event services',
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  return {
+    title: { default: 'Evently — Georgian Events Platform', template: '%s | Evently' },
+    description: 'Discover events, designers, venues, bands and event managers in Georgia. Buy tickets, book services, share your designs.',
+    keywords: ['events', 'Georgia', 'Tbilisi', 'wedding', 'designers', 'tickets', 'ღონისძიება', 'თბილისი'],
+    openGraph: {
+      type: 'website',
+      locale: locale === 'ka' ? 'ka_GE' : 'en_US',
+      siteName: 'Evently',
+    },
+  }
 }
 
 interface LocaleLayoutProps {

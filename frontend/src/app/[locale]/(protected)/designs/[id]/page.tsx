@@ -4,6 +4,7 @@ import { use, useState, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/client/react'
 import { useTranslations } from 'next-intl'
 import { ChevronLeft, ChevronRight, Heart, Bookmark } from 'lucide-react'
+import Image from 'next/image'
 import { useAuth } from '@/lib/auth/auth-context'
 import { Link } from '@/i18n/navigation'
 import { Avatar } from '@/components/profile/avatar'
@@ -110,10 +111,11 @@ export default function DesignDetailPage({ params }: PageProps) {
           <div className="relative md:w-1/2">
             <div className="aspect-square overflow-hidden rounded-2xl bg-muted relative">
               {images[imageIndex] ? (
-                <img
+                <Image
                   src={images[imageIndex]}
                   alt={design.title}
-                  className="h-full w-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               ) : (
                 <div className="flex h-full items-center justify-center text-muted-foreground">
@@ -142,11 +144,11 @@ export default function DesignDetailPage({ params }: PageProps) {
                       key={idx}
                       onClick={() => setImageIndex(idx)}
                       className={cn(
-                        'h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-colors',
+                        'relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-colors',
                         idx === imageIndex ? 'border-primary' : 'border-border',
                       )}
                     >
-                      <img src={img} alt="" className="h-full w-full object-cover" />
+                      <Image src={img} alt="" fill className="object-cover" />
                     </button>
                   ))}
                 </div>

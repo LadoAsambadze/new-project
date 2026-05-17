@@ -4,6 +4,7 @@ import { useState, useRef } from 'react'
 import { useMutation } from '@apollo/client/react'
 import { useTranslations } from 'next-intl'
 import { X, Upload } from 'lucide-react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -236,7 +237,7 @@ export function CreateEventForm({ onSuccess, onCancel, initialEvent }: CreateEve
               key={idx}
               className="relative h-20 w-20 rounded-md overflow-hidden border border-border"
             >
-              <img src={url} alt="" className="h-full w-full object-cover" />
+              <Image src={url} alt="" fill className="object-cover" />
               <button
                 type="button"
                 onClick={() => removeImage(idx)}

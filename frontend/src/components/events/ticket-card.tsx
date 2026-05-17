@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl'
 import { Calendar, MapPin } from 'lucide-react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import type { TicketType } from '@/graphql/events/types'
 
@@ -25,8 +26,8 @@ export function TicketCard({ ticket }: TicketCardProps) {
     <div className="rounded-xl border border-border bg-card overflow-hidden">
       <div className="flex">
         {event.images[0] && (
-          <div className="w-24 shrink-0 bg-muted">
-            <img src={event.images[0]} alt={event.title} className="h-full w-full object-cover" />
+          <div className="relative w-24 shrink-0 bg-muted">
+            <Image src={event.images[0]} alt={event.title} fill className="object-cover" />
           </div>
         )}
         <div className="flex-1 p-4 flex flex-col gap-2">

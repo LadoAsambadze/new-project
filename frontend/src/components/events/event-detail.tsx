@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useMutation } from '@apollo/client/react'
 import { useTranslations } from 'next-intl'
 import { MapPin, Calendar, Ticket, User } from 'lucide-react'
+import Image from 'next/image'
 import { Avatar } from '@/components/profile/avatar'
 import { Button } from '@/components/ui/button'
 import { PURCHASE_TICKET_MUTATION } from '@/graphql/events/mutations'
@@ -51,11 +52,12 @@ export function EventDetail({ event, currentUserId, hasTicket }: EventDetailProp
       {/* Image gallery */}
       {event.images.length > 0 && (
         <div className="mb-6">
-          <div className="aspect-video overflow-hidden rounded-xl bg-muted">
-            <img
+          <div className="aspect-video overflow-hidden rounded-xl bg-muted relative">
+            <Image
               src={event.images[activeImage]}
               alt={event.title}
-              className="h-full w-full object-cover"
+              fill
+              className="object-cover"
             />
           </div>
           {event.images.length > 1 && (
@@ -64,11 +66,11 @@ export function EventDetail({ event, currentUserId, hasTicket }: EventDetailProp
                 <button
                   key={i}
                   onClick={() => setActiveImage(i)}
-                  className={`h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
+                  className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
                     activeImage === i ? 'border-primary' : 'border-border'
                   }`}
                 >
-                  <img src={img} alt="" className="h-full w-full object-cover" />
+                  <Image src={img} alt="" fill className="object-cover" />
                 </button>
               ))}
             </div>
