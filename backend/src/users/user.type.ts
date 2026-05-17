@@ -26,6 +26,9 @@ export class UserType {
   @Field({ nullable: true })
   city?: string;
 
+  @Field({ nullable: true })
+  banned?: boolean;
+
   @Field(() => String)
   createdAt!: string;
 }

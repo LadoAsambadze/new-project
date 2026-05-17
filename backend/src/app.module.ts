@@ -14,6 +14,7 @@ import { ServicesModule } from './services/services.module.js';
 import { EventsModule } from './events/events.module.js';
 import { NotificationsModule } from './notifications/notifications.module.js';
 import { MessagingModule } from './messaging/messaging.module.js';
+import { AdminModule } from './admin/admin.module.js';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { MessagingModule } from './messaging/messaging.module.js';
     EventsModule,
     NotificationsModule,
     MessagingModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -9,6 +9,7 @@ datasource db {
 enum Role {
   CUSTOMER
   VENDOR
+  ADMIN
 }
 
 enum VendorType {
@@ -41,6 +42,7 @@ model User {
   googleId   String?     @unique
   facebookId String?     @unique
   isVerified Boolean     @default(false)
+  banned     Boolean     @default(false)
   city       String?
   bio        String?
   createdAt  DateTime    @default(now())
