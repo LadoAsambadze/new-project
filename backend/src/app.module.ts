@@ -12,6 +12,8 @@ import { UploadModule } from './upload/upload.module.js';
 import { DesignsModule } from './designs/designs.module.js';
 import { ServicesModule } from './services/services.module.js';
 import { EventsModule } from './events/events.module.js';
+import { NotificationsModule } from './notifications/notifications.module.js';
+import { MessagingModule } from './messaging/messaging.module.js';
 
 @Module({
   imports: [
@@ -30,6 +32,10 @@ import { EventsModule } from './events/events.module.js';
       autoSchemaFile: join(process.cwd(), 'schema.gql'),
       sortSchema: true,
       playground: process.env.NODE_ENV !== 'production',
+      installSubscriptionHandlers: true,
+      subscriptions: {
+        'graphql-ws': true,
+      },
       context: ({ req, res }: { req: Request; res: Response }) => ({
         req,
         res,
@@ -43,6 +49,8 @@ import { EventsModule } from './events/events.module.js';
     DesignsModule,
     ServicesModule,
     EventsModule,
+    NotificationsModule,
+    MessagingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

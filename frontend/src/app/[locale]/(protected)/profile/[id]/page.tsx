@@ -6,6 +6,7 @@ import { USER_PROFILE_QUERY } from '@/graphql/users/queries'
 import type { UserProfile } from '@/graphql/types'
 import { Avatar } from '@/components/profile/avatar'
 import { Button } from '@/components/ui/button'
+import { Link } from '@/i18n/navigation'
 import { use } from 'react'
 
 interface UserProfileData {
@@ -83,8 +84,10 @@ export default function VendorProfilePage({
         </div>
       )}
 
-      <Button variant="outline" disabled>
-        Contact (coming soon)
+      <Button variant="outline" asChild>
+        <Link href={`/messages?with=${profile.id}`}>
+          {t('messages.contact')}
+        </Link>
       </Button>
     </div>
   )

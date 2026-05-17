@@ -1,4 +1,4 @@
-export type Role = 'CUSTOMER' | 'VENDOR'
+export type Role = 'CUSTOMER' | 'VENDOR' | 'ADMIN'
 export type VendorType = 'DESIGNER' | 'VENUE' | 'BAND' | 'EVENT_MANAGER'
 
 export interface AuthUser {

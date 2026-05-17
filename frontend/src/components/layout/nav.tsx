@@ -5,6 +5,7 @@ import { useRouter, Link, usePathname } from '@/i18n/navigation'
 import { useAuth } from '@/lib/auth/auth-context'
 import { cn } from '@/lib/utils'
 import { LogOut } from 'lucide-react'
+import { NotificationBell } from '@/components/notifications/notification-bell'
 
 const NAV_LINKS = [
   { href: '/discover', labelKey: 'discover.localEvents' },
@@ -12,12 +13,13 @@ const NAV_LINKS = [
   { href: '/services', labelKey: 'services.title' },
   { href: '/events', labelKey: 'events.title' },
   { href: '/bookings', labelKey: 'services.myBookings' },
+  { href: '/messages', labelKey: 'messages.title' },
   { href: '/profile', labelKey: 'profile.title' },
 ] as const
 
 export function Nav() {
   const t = useTranslations()
-  const { logout } = useAuth()
+  const { logout, user } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
 
@@ -44,15 +46,31 @@ export function Nav() {
               {t(labelKey)}
             </Link>
           ))}
+          {user?.role === 'ADMIN' && (
+            <Link
+              href="/admin"
+              className={cn(
+                'flex-shrink-0 rounded-md px-3 py-1.5 text-sm font-medium transition-colors whitespace-nowrap',
+                pathname === '/admin'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
+              )}
+            >
+              {t('admin.title')}
+            </Link>
+          )}
         </div>
-        <button
-          onClick={() => void handleLogout()}
-          className="flex-shrink-0 flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
-          aria-label="Logout"
-        >
-          <LogOut className="h-4 w-4" />
-          <span className="hidden sm:inline">Logout</span>
-        </button>
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <NotificationBell />
+          <button
+            onClick={() => void handleLogout()}
+            className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+            aria-label="Logout"
+          >
+            <LogOut className="h-4 w-4" />
+            <span className="hidden sm:inline">Logout</span>
+          </button>
+        </div>
       </div>
     </nav>
   )

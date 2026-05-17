@@ -46,15 +46,17 @@ model User {
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 
-  refreshTokens RefreshToken[]
-  designs       Design[]
-  services      Service[]
-  events        Event[]
-  bookings      Booking[]
-  tickets       Ticket[]
-  notifications Notification[]
-  savedDesigns  SavedDesign[]
-  designLikes   DesignLike[]
+  refreshTokens    RefreshToken[]
+  designs          Design[]
+  services         Service[]
+  events           Event[]
+  bookings         Booking[]
+  tickets          Ticket[]
+  notifications    Notification[]
+  savedDesigns     SavedDesign[]
+  designLikes      DesignLike[]
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
 }
 
 model RefreshToken {
@@ -180,4 +182,15 @@ model Notification {
   read      Boolean  @default(false)
   link      String?
   createdAt DateTime @default(now())
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  fromUserId String
+  toUserId   String
+  body       String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  fromUser   User     @relation("SentMessages", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser     User     @relation("ReceivedMessages", fields: [toUserId], references: [id], onDelete: Cascade)
 }
