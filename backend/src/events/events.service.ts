@@ -5,6 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { NotificationsService } from '../notifications/notifications.service.js';
 import { CreateEventInput } from './dto/create-event.input.js';
 import { UpdateEventInput } from './dto/update-event.input.js';
 import { EventType, TicketType } from './event.type.js';
@@ -122,7 +123,10 @@ const TICKET_INCLUDE = {
 
 @Injectable()
 export class EventsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
   async create(userId: string, dto: CreateEventInput): Promise<EventType> {
     const event = await this.prisma.event.create({
@@ -276,7 +280,17 @@ export class EventsService {
       },
       include: TICKET_INCLUDE,
     });
-    return toTicketType(ticket as unknown as DbTicket);
+
+    // Notify the organizer
+    const fullTicket = ticket as unknown as DbTicket;
+    await this.notificationsService.create(
+      event.userId,
+      'Someone purchased a ticket to your event',
+      `A new ticket was purchased for "${fullTicket.event.title}".`,
+      `/events/${eventId}`,
+    );
+
+    return toTicketType(fullTicket);
   }
 
   async getMyTickets(userId: string): Promise<TicketType[]> {

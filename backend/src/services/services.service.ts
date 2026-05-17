@@ -5,6 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { NotificationsService } from '../notifications/notifications.service.js';
 import { CreateServiceInput } from './dto/create-service.input.js';
 import { UpdateServiceInput } from './dto/update-service.input.js';
 import { CreateBookingInput } from './dto/create-booking.input.js';
@@ -109,7 +110,10 @@ const BOOKING_INCLUDE = {
 
 @Injectable()
 export class ServicesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
   async create(userId: string, dto: CreateServiceInput): Promise<ServiceType> {
     const categoryValue = dto.category.toUpperCase() as VendorType;
@@ -265,6 +269,24 @@ export class ServicesService {
       data: { status },
       include: BOOKING_INCLUDE,
     });
+
+    // Notify the customer
+    if (status === 'CONFIRMED') {
+      await this.notificationsService.create(
+        booking.userId,
+        'Your booking was confirmed',
+        `Your booking for "${booking.service.title}" has been confirmed.`,
+        '/bookings',
+      );
+    } else if (status === 'CANCELLED') {
+      await this.notificationsService.create(
+        booking.userId,
+        'Your booking was cancelled',
+        `Your booking for "${booking.service.title}" has been cancelled.`,
+        '/bookings',
+      );
+    }
+
     return toBookingType(updated as unknown as DbBooking);
   }
 
